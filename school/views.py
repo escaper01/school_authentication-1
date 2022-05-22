@@ -19,6 +19,8 @@ import os
 
 
 def home_view(request):
+    if request.user.is_staff:
+            logout(request)
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
     return render(request,'school/index.html')
@@ -240,6 +242,7 @@ def afterlogin_view(request):
             return redirect('student-dashboard')
         else:
             return render(request,'school/student_wait_for_approval.html')
+    print('no use______')
     # return render(request,'school/index.html')
 
 
@@ -259,8 +262,8 @@ def admin_dashboard_view(request):
     teachersalary=models.TeacherExtra.objects.filter(status=True).aggregate(Sum('salary'))
     pendingteachersalary=models.TeacherExtra.objects.filter(status=False).aggregate(Sum('salary'))
 
-    studentfee=models.StudentExtra.objects.filter(status=True).aggregate(Sum('fee',default=0))
-    pendingstudentfee=models.StudentExtra.objects.filter(status=False).aggregate(Sum('fee'))
+    # studentfee=models.StudentExtra.objects.filter(status=True).aggregate(Sum('fee',default=0))
+    # pendingstudentfee=models.StudentExtra.objects.filter(status=False).aggregate(Sum('fee'))
 
     notice=models.Notice.objects.all()
 
@@ -275,8 +278,8 @@ def admin_dashboard_view(request):
         'teachersalary':teachersalary['salary__sum'],
         'pendingteachersalary':pendingteachersalary['salary__sum'],
 
-        'studentfee':studentfee['fee__sum'],
-        'pendingstudentfee':pendingstudentfee['fee__sum'],
+        # 'studentfee':studentfee['fee__sum'],
+        # 'pendingstudentfee':pendingstudentfee['fee__sum'],
 
         'notice':notice
 
@@ -302,7 +305,7 @@ def admin_teacher_view(request):
 def admin_add_teacher_view(request):
     form1=forms.TeacherUserForm()
     form2=forms.TeacherExtraForm()
-    mydict={'form1':form1,'form2':form2}
+    custom_error = ''
     if request.method=='POST':
         form1=forms.TeacherUserForm(request.POST)
         form2=forms.TeacherExtraForm(request.POST)
@@ -315,11 +318,20 @@ def admin_add_teacher_view(request):
             f2.user=user
             f2.status=True
             f2.save()
-
+            cam = VideoCamera()
+            image_created = cam.shoot(user.username, user.id)
             my_teacher_group = Group.objects.get_or_create(name='TEACHER')
             my_teacher_group[0].user_set.add(user)
+            if image_created:
+                user.image = f"{os.getcwd()}\InscriptionEtudiant\static\images\Attendance_database\{user.username}_{user.id}\{user.username}.jpg"
+                messages.success(request, 'Teacher Account was successfully registred')
+                return HttpResponseRedirect('admin-teacher')
+            else:
+                custom_error = 'your images was not saved'
+                u = User.objects.get(username = user.username)
+                u.delete()
 
-        return HttpResponseRedirect('admin-teacher')
+    mydict={'form1':form1,'form2':form2}
     return render(request,'school/admin_add_teacher.html',context=mydict)
 
 
@@ -415,7 +427,8 @@ def admin_student_view(request):
 def admin_add_student_view(request):
     form1=forms.StudentUserForm()
     form2=forms.StudentExtraForm()
-    mydict={'form1':form1,'form2':form2}
+    custom_error = ''
+
     if request.method=='POST':
         form1=forms.StudentUserForm(request.POST)
         form2=forms.StudentExtraForm(request.POST)
@@ -430,11 +443,20 @@ def admin_add_student_view(request):
             f2.status=True
             f2.save()
 
+            cam = VideoCamera()
+            image_created = cam.shoot(user.username, user.id)
             my_student_group = Group.objects.get_or_create(name='STUDENT')
             my_student_group[0].user_set.add(user)
-        else:
-            print("form is invalid")
-        return HttpResponseRedirect('admin-student')
+            if image_created:
+                user.image = f"{os.getcwd()}\InscriptionEtudiant\static\images\Attendance_database\{user.username}_{user.id}\{user.username}.jpg"
+                messages.success(request, 'Student Account was successfully registred')
+                return HttpResponseRedirect('admin-student')
+            else:
+                custom_error = 'your images was not saved'
+                u = User.objects.get(username = user.username)
+                u.delete()
+
+    mydict={'form1':form1,'form2':form2}
     return render(request,'school/admin_add_student.html',context=mydict)
 
 
@@ -505,11 +527,11 @@ def approve_student_view(request,pk):
     return redirect(reverse('admin-approve-student'))
 
 
-@login_required(login_url='adminlogin')
-@user_passes_test(is_admin)
-def admin_view_student_fee_view(request):
-    students=models.StudentExtra.objects.all()
-    return render(request,'school/admin_view_student_fee.html',{'students':students})
+# @login_required(login_url='adminlogin')
+# @user_passes_test(is_admin)
+# def admin_view_student_fee_view(request):
+#     students=models.StudentExtra.objects.all()
+#     return render(request,'school/admin_view_student_fee.html',{'students':students})
 
 
 
@@ -572,18 +594,18 @@ def admin_view_attendance_view(request,cl):
 
 
 
-#fee related view by admin
-@login_required(login_url='adminlogin')
-@user_passes_test(is_admin)
-def admin_fee_view(request):
-    return render(request,'school/admin_fee.html')
+# #fee related view by admin
+# @login_required(login_url='adminlogin')
+# @user_passes_test(is_admin)
+# def admin_fee_view(request):
+#     return render(request,'school/admin_fee.html')
 
 
-@login_required(login_url='adminlogin')
-@user_passes_test(is_admin)
-def admin_view_fee_view(request,cl):
-    feedetails=models.StudentExtra.objects.all().filter(cl=cl)
-    return render(request,'school/admin_view_fee.html',{'feedetails':feedetails,'cl':cl})
+# @login_required(login_url='adminlogin')
+# @user_passes_test(is_admin)
+# def admin_view_fee_view(request,cl):
+#     feedetails=models.StudentExtra.objects.all().filter(cl=cl)
+#     return render(request,'school/admin_view_fee.html',{'feedetails':feedetails,'cl':cl})
 
 
 
@@ -707,7 +729,7 @@ def student_dashboard_view(request):
     mydict={
         'roll':studentdata[0].roll,
         'mobile':studentdata[0].mobile,
-        'fee':studentdata[0].fee,
+        'age':studentdata[0].age,
         'notice':notice
     }
     return render(request,'school/student_dashboard.html',context=mydict)

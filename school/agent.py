@@ -86,7 +86,7 @@ class VideoCamera:
                 break
 
     def cam_stream(self, name=None):
-        name = "Nouveau user detecter"
+        name = "New user detecter"
         while True:
             # Grab a single frame of video
             ret, frame = self.video_capture.read()
@@ -120,7 +120,7 @@ class VideoCamera:
         time_diff = 0
         start = time.time()
 
-        name = "Nouveau user detecter"
+        name = "New user detecter"
         while True:
             end = time.time()
             time_diff = int(end - start)
@@ -165,7 +165,7 @@ class VideoCamera:
             if time_diff > 20:
                 self.__del__()
                 return False
-            # if face_locations != []:
+            # if face_locations != []: C:\Users\escaper\OneDrive\Bureau\projects\face detection\schoolmanagement\school_authentication\static\images
             #     phrase = 'be ready'
             #     cv2.putText(frame,phrase, (20, 15), font, 0.7, (255, 255, 255), 1)
 
