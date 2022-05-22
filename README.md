@@ -58,7 +58,7 @@ EMAIL_RECEIVING_USER = 'youremail@gmail.com'
 https://myaccount.google.com/lesssecureapps
 ```
 
-ON db chamges :
+ON db changes :
 
 ```
 python manage.py migrate --run-syncdb

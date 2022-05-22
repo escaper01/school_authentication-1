@@ -1,8 +1,3 @@
-"""
-by sumit kumar
-written by fb.com/sumit.luv
-
-"""
 from django.contrib import admin
 from django.urls import path
 from school import views
@@ -11,10 +6,6 @@ from django.contrib.auth.views import LoginView,LogoutView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.home_view,name=''),
-    ## video feed
-    # path('user_checker', views.user_checker, name='user_check'),
-    # path('video/<str:_type>', views.video_cap, name='video_cap'),
-
 
     path('adminclick', views.adminclick_view),
     path('teacherclick', views.teacherclick_view),
@@ -59,7 +50,7 @@ urlpatterns = [
     path('update-student/<int:pk>', views.update_student_view,name='update-student'),
     path('admin-approve-student', views.admin_approve_student_view,name='admin-approve-student'),
     path('approve-student/<int:pk>', views.approve_student_view,name='approve-student'),
-    path('admin-view-student-fee', views.admin_view_student_fee_view,name='admin-view-student-fee'),
+    # path('admin-view-student-fee', views.admin_view_student_fee_view,name='admin-view-student-fee'),
 
 
     path('admin-attendance', views.admin_attendance_view,name='admin-attendance'),
@@ -67,8 +58,8 @@ urlpatterns = [
     path('admin-view-attendance/<str:cl>', views.admin_view_attendance_view,name='admin-view-attendance'),
 
 
-    path('admin-fee', views.admin_fee_view,name='admin-fee'),
-    path('admin-view-fee/<str:cl>', views.admin_view_fee_view,name='admin-view-fee'),
+    # path('admin-fee', views.admin_fee_view,name='admin-fee'),
+    # path('admin-view-fee/<str:cl>', views.admin_view_fee_view,name='admin-view-fee'),
 
     path('admin-notice', views.admin_notice_view,name='admin-notice'),
 

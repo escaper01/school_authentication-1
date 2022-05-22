@@ -5,7 +5,7 @@
 __pycache__
 db.sqlite3
 media
-static/images/Attendance_database
+static/images/Attendance_database/
 
 # Backup files # 
 *.bak 
